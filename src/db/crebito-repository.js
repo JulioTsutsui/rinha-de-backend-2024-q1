@@ -9,15 +9,6 @@ const pool = new Pool({
   max: 5,
 });
 
-// const pool = new Pool({
-//   host: 'localhost',
-//   user: 'juliu',
-//   password: 'funcionapls',
-//   database: 'crebito',
-//   idleTimeoutMillis: 0,
-//   max: 10,
-// });
-
 async function getClientStatus(id) {
   const client = await pool.connect();
   try {
@@ -43,7 +34,7 @@ async function insertTransaction(id, data) {
     let { total, limite } = clientBalance.rows[0];
     const newBalance = tipo === 'd' ? total -= valor : total += valor;
     
-    if (newBalance < -limite) {
+    if (!Number.isInteger(valor) || newBalance < -limite) {
       await client.query('ROLLBACK');
       return null;
     }
